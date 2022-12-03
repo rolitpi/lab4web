@@ -8,12 +8,29 @@ from taskType import TaskType
 app = FastAPI()
 HOST_NAME = "127.0.0.1"
 PORT = 8000
+processor = Processor()
+
+
+@app.get("/solvers/test", name="Протестировать все задачи")
+async def test():
+    for data in TaskType:
+        await test_single_solver(TaskType(data))
 
 
 @app.get("/solvers/{task}", name="Получить ответ на задачу")
 async def get_answer(task: TaskType):
-    processor = Processor()
     return {"Ответ": processor.solve_task(task)}
+
+
+@app.get("/solvers/test/{task}", name="Протестировать одну задачу")
+async def test_single_solver(task: TaskType):
+    print(f'Тестируем задачу {task.value}')
+    answer = processor.solve_task(task, f'inputs/test/{task.name}.txt')
+    print(f'Получили ответ {answer}')
+    f = open(f'inputs/test/{task.name}_output.txt')
+    intended_answer = f.readline()
+    print(f'Эталонный ответ {intended_answer}')
+    assert answer == intended_answer
 
 
 if __name__ == "__main__":
