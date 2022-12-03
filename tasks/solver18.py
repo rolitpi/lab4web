@@ -27,7 +27,4 @@ class Solver18:
                     mx, rx = k, r1
             else:
                 k = 1
-        print(mx, rx)
-
-        for r, c in [(r, c) for r, c in d if r == 3861]:
-            return f'{r} {c}'
+        return f'{rx} {mx}'

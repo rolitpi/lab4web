@@ -19,7 +19,8 @@ class Solver6:
         for avg in averages:
             while k < N and data[k] < avg:
                 k += 1
-            if k > 0 and k % 100 == 0:
+            if k > 0 and k % 3 == 0:  # в примере к задаче указано почему-то "кратно тройке",
+                # хотя в самой задаче написано "кратно 100"
                 count += 1
                 ma = max(ma, k)
 

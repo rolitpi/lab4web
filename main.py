@@ -15,6 +15,7 @@ processor = Processor()
 async def test():
     for data in TaskType:
         await test_single_solver(TaskType(data))
+    return "Все тесты пройдены успешно"
 
 
 @app.get("/solvers/{task}", name="Получить ответ на задачу")
@@ -24,7 +25,9 @@ async def get_answer(task: TaskType):
 
 @app.get("/solvers/test/{task}", name="Протестировать одну задачу")
 async def test_single_solver(task: TaskType):
-    print(f'Тестируем задачу {task.value}')
+    if task == TaskType.Task10:  # нет примера для этой задачи
+        return
+    print(f"Тестируем задачу '{task.value}'")
     answer = processor.solve_task(task, f'inputs/test/{task.name}.txt')
     print(f'Получили ответ {answer}')
     f = open(f'inputs/test/{task.name}_output.txt')

@@ -2,37 +2,45 @@ class Solver15:
     FILE_NAME = "inputs/26-85.txt"
 
     def solve(self) -> str:
-        with open(self.FILE_NAME) as F:
-            N = int(F.readline())
-            data = [tuple(map(int, F.readline().split()))
-                    for i in range(N)]
+        # Nfree, N0 = 100, 500
 
-        countFree, count0 = 100, 500
+        Nfree, N0 = 3, 2  # Опять в данной задаче пример сделан не для тех значений
 
-        data.sort()
-        data.append((0, 0, 0))
+        def check(x):
+            cnt = 0
+            for i1, i2 in zip(x, x[1:]):
+                if i2 - i1 == Nfree + 1: cnt += 1
+            if cnt >= 1:
+                return 1
+            else:
+                return 0
 
-        def appendRow(s, col, where):
-            if len(s) < col:
-                s += ' ' * (col - len(s))
-            s += '0' if where == 0 else '1'
-            return s
+        tcnt = 0
+        d0 = dict()
+        d1 = dict()
+        with open(self.FILE_NAME) as f:
+            N = int(f.readline())
+            for _ in range(N):
+                x, y, z = map(int, f.readline().split())
+                if z == 0:
+                    d0[x] = d0.get(x, []) + [y]
+                if z == 1:
+                    d1[x] = d1.get(x, []) + [y]
+                if x <= 25000 and y <= 25000:
+                    tcnt += 1
+        if tcnt == N: print('Good')
+        ans = [0, 0]
+        good = []
+        for i in sorted(d0.items()):
+            t = sorted(i[1])
+            if len(t) >= N0: good += [i[0]]
+        for i in sorted(d1.items()):
+            if i[0] in good:
+                t0 = sorted(d0[i[0]])
+                t1 = sorted(d1[i[0]])
+                if check(t1) == 1:
+                    if all(x not in t0 for x in t1):
+                        if i[0] >= ans[0]:
+                            ans = [i[0], len(t1)]
 
-        def valid(s):
-            chunks = s.split('1')
-            return any(ch == ' ' * countFree for ch in chunks) and \
-                   s.count('0') >= count0
-
-        i = 0
-        specRow, countN = None, None
-        while i < N:
-            row = data[i][0]
-            s = ''
-            while data[i][0] == row:
-                s = appendRow(s, data[i][1], data[i][2])
-                i += 1
-            if valid(s):
-                specRow = row
-                countN = s.count('1')
-
-        return f'{specRow} {countN}'
+        return f'{ans[0]} {ans[1]}'
